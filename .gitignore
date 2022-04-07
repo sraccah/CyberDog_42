@@ -6,6 +6,14 @@ __pycache__/
 # C extensions
 *.so
 
+# Mac
+.DS_Store
+
+# Cyberdog generated files
+__pycache__
+*_pb2*
+*.proto
+
 # Distribution / packaging
 .Python
 build/
