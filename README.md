@@ -282,5 +282,5 @@ response = stub.setPattern(
 )
 for resp in response:
     succeed_state = resp.succeed
-    print('Change gait to walk, result:' + str(succeed_state))
+    print('Change gait to trot, result:' + str(succeed_state))
 ```
