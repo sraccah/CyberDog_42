@@ -242,7 +242,8 @@ GAIT_DEFAULT   = 99;
 So we can use the `setExtmonOrder()` function to set the mode:
 
 ```python
-# Code to connect and stand up
+# Previous code to connect and stand up
+# ...
 # Execute Dance order
 if (succeed_state == False):
     return
