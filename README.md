@@ -49,7 +49,7 @@ with grpc.insecure_channel(str(CYBERDOG_IP) + ':50051') as channel:
     stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
 ```
 
-Next, you can use the `stub` to send commands to the CyberDog:
+Next, you can use the `setMode()` function from the `stub` to send a commands to the CyberDog:
 
 ```python
 # MANUAL MODE => Stand up
@@ -188,3 +188,98 @@ def Stop(Event):
 ```
 
 Go back to the keyboard part of this document to see how we can use these functions and the keyboard to control the robot.
+
+We saw the `setMode()` function but there is a lot of posibilities, for exemple the `setExtmonOrder()` to use a predefined action from the list below:
+
+```python
+MONO_ORDER_NULL        =  0;
+MONO_ORDER_WAKE_STOP   =  1;
+MONO_ORDER_SHUT_STOP   =  2;
+MONO_ORDER_STAND_UP    =  9;
+MONO_ORDER_PROSTRATE   = 10;
+MONO_ORDER_COME_HERE   = 11;
+MONO_ORDER_STEP_BACK   = 12;
+MONO_ORDER_TURN_AROUND = 13;
+MONO_ORDER_HI_FIVE     = 14;
+MONO_ORDER_DANCE       = 15;
+MONO_ORDER_WELCOME     = 16;
+MONO_ORDER_TURN_OVER   = 17;
+MONO_ORDER_SIT         = 18;
+MONO_ORDER_BOW         = 19;
+MONO_ORDER_MAX         = 20;
+```
+
+The modes are defining the standing position of the CyberDog and are:
+
+```python
+DEFAULT = 0; # default mode seen earlier (Get down)
+LOCK = 1;
+CONFIG = 2;
+MANUAL = 3; # manual mode seen earlier (Stand up)
+SEMI = 13;
+EXPLOR = 14;
+TRACK = 15;
+```
+
+The moving patterns are called `GAIT` and are defining the way the CyberDog will move. (the walking style as we may say)
+
+```python
+GAIT_TRANS     = 0;
+GAIT_PASSIVE   = 1;
+GAIT_KNEEL     = 2;
+GAIT_STAND_R   = 3;
+GAIT_STAND_B   = 4;
+GAIT_AMBLE     = 5;
+GAIT_WALK      = 6;
+GAIT_SLOW_TROT = 7;
+GAIT_TROT      = 8;
+GAIT_FLYTROT   = 9;
+GAIT_BOUND     = 10;
+GAIT_PRONK     = 11;
+GAIT_DEFAULT   = 99;
+```
+
+So we can use the `setExtmonOrder()` function to set the mode:
+
+```python
+# Code to connect and stand up
+# Execute Dance order
+if (succeed_state == False):
+    return
+response = stub.setExtmonOrder(
+    cyberdog_app_pb2.ExtMonOrder_Request(
+        order=cyberdog_app_pb2.MonOrder(
+            id=cyberdog_app_pb2.MonOrder.MONO_ORDER_DANCE,
+            para=0
+        ),
+        timeout=50))
+for resp in response:
+    succeed_state = resp.succeed
+    print('Execute Dance order, result:' + str(succeed_state))
+```
+
+And the `setPattern()` function to set the gait:
+
+```python
+# Change gait to walk
+response = stub.setPattern(
+    cyberdog_app_pb2.CheckoutPattern_request(
+        patternstamped=cyberdog_app_pb2.PatternStamped(
+            header=cyberdog_app_pb2.Header(
+                stamp=cyberdog_app_pb2.Timestamp(
+                    sec=0,
+                    nanosec=0
+                ),
+                frame_id=""
+            ),
+            pattern=cyberdog_app_pb2.Pattern(
+                gait_pattern=cyberdog_app_pb2.Pattern.GAIT_TROT
+            )
+        ),
+        timeout=10
+    )
+)
+for resp in response:
+    succeed_state = resp.succeed
+    print('Change gait to walk, result:' + str(succeed_state))
+```
