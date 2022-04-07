@@ -9,7 +9,7 @@ sudo pip install grpcio
 sudo pip install grpcio-tools
 ```
 
-From the repository <https://partner-gitlab.mioffice.cn/cyberdog/athena_cyberdog/-/tree/devel/athena_common/athena_grpc/protos>, download the proto file `cyberdog_app.proto` and use the following command to generate the python module:
+From the [Xiaomi CyberDog Protocol Repository](https://partner-gitlab.mioffice.cn/cyberdog/athena_cyberdog/-/tree/devel/athena_common/athena_grpc/protos), download the proto file `cyberdog_app.proto` and use the following command to generate the python module:
 
 ```bash
 python3 -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. *.proto
