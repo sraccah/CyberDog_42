@@ -261,7 +261,7 @@ for resp in response:
 And the `setPattern()` function to set the gait:
 
 ```python
-# Change gait to walk
+# Change gait to trot
 response = stub.setPattern(
     cyberdog_app_pb2.CheckoutPattern_request(
         patternstamped=cyberdog_app_pb2.PatternStamped(
