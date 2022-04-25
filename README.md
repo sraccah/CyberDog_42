@@ -299,4 +299,4 @@ for resp in response:
 
 ## **NOTICE**
 
-Using the mobile application and a computer, or two computers, AT THE SAME TIME to control the robot is not adviced as it's giving contradictory signals to the Cyberdog.
+Using the mobile application and a computer, or two computers, **at the same time** to control the robot is not adviced as it's giving contradictory signals to the Cyberdog.
