@@ -111,14 +111,20 @@ From now you can add all kind of functions and interactions with the CyberDog, t
 For exemple the keyboard module can be used to control the robot:
 
 ```python
+# FORWARD and BACKWARD
+keyboard.on_press_key('w', GoForward)
+keyboard.on_press_key('s', GoBack)
+# STRAFING
+keyboard.on_press_key('a', GoLeft)
+keyboard.on_press_key('d', GoRight)
+# ROTATE
+keyboard.on_press_key('q', TurnLeft)
+keyboard.on_press_key('e', TurnRight)
 # ARROWS CODES TO NAVIGUATE
 keyboard.on_press_key('up', GoForward)
 keyboard.on_press_key('down', GoBack)
 keyboard.on_press_key('left', TurnLeft)
 keyboard.on_press_key('right', TurnRight)
-# ROTATE
-keyboard.on_press_key('q', TurnLeft)
-keyboard.on_press_key('e', TurnRight)
 # VELOCIDAD
 keyboard.on_press_key('u', SpeedUp)
 keyboard.on_press_key('i', SpeedDown)
