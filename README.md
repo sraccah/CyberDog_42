@@ -5,8 +5,8 @@
 First of all, you need to install the `grpc` module:
 
 ```bash
-sudo pip install grpcio
-sudo pip install grpcio-tools
+sudo pip3 install grpcio
+sudo pip3 install grpcio-tools
 ```
 
 From the [Xiaomi CyberDog Protocol Repository](https://partner-gitlab.mioffice.cn/cyberdog/athena_cyberdog/-/tree/devel/athena_common/athena_grpc/protos), download the proto file `cyberdog_app.proto` and use the following command to generate the python module:
@@ -22,7 +22,13 @@ Be sure that the files generated are named `cyberdog_app_pb2.py` and `cyberdog_a
 You also can install the keyboard python module to easily control the keyboard:
 
 ```bash
-sudo pip install keyboard
+sudo pip3 install keyboard
+```
+
+A requirements file is available, to just do:
+
+```bash
+pip3 install -r requirements.txt
 ```
 
 ## **Scripting time**
@@ -284,3 +290,7 @@ for resp in response:
     succeed_state = resp.succeed
     print('Change gait to trot, result:' + str(succeed_state))
 ```
+
+## **NOTICE**
+
+Using the mobile application and a computer, or two computers, AT THE SAME TIME to control the robot is not adviced as it's giving contradictory signals to the Cyberdog.
