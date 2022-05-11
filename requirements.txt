@@ -1,3 +1,7 @@
 grpcio
 grpcio-tools
 keyboard
+pygame
+colored
+moviepy
+opencv-python

@@ -23,6 +23,7 @@ You also can install the keyboard python module to easily control the keyboard:
 
 ```bash
 sudo pip3 install keyboard
+sudo pip3 install pygame
 ```
 
 A requirements file is available, to just do:
@@ -297,6 +298,44 @@ for resp in response:
     print('Change gait to trot, result:' + str(succeed_state))
 ```
 
+## **USING A GAMEPAD TO CONTROL THE CYBERDOG**
+
+To do that we are using the `pygame` librairy. And are initializating the librairy as such:
+
+```python
+pygame.init()
+```
+
+To check if we have some controllers plugged in:
+
+```python
+# Checking for joysticks
+joystick_count = pygame.joystick.get_count()
+if joystick_count == 0:
+    # No joysticks!
+    print("Error, No he encontrado ningún joystick.")
+    exit()
+else:
+    # Initialize joystick #0
+    mi_joystick = pygame.joystick.Joystick(0)
+    mi_joystick.init()
+    # Get the name from the OS for the controller/joystick.
+    name = mi_joystick.get_name()
+    print("Joystick name: {}".format(name))
+```
+
+No olvidas to quit `pygame` when you are done:
+
+```python
+pygame.quit()
+```
+
+You can use the script provided to get the datas from the controller. (controller_styled.py or controller_name.py)
+
 ## **NOTICE**
 
 Using the mobile application and a computer, or two computers, **at the same time** to control the robot is not adviced as it's giving contradictory signals to the Cyberdog.
+
+## **TROUBLESHOOTING**
+
+If the CyberDog is not reacting to nothing, you can try to revive it by plugging it to the charger for a second.
