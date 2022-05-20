@@ -339,3 +339,7 @@ Using the mobile application and a computer, or two computers, **at the same tim
 ## **TROUBLESHOOTING**
 
 If the CyberDog is not reacting to nothing, you can try to revive it by plugging it to the charger for a second.
+
+## **IDEAS**
+
+WOL on the CyberDog and an Alexa skill to be able to call the robot from anywhere.
