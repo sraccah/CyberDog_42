@@ -14,14 +14,14 @@ from pygame.locals import *
 import moviepy.editor
 import cv2
 
-# Posición actual
-x_coord = 10
-y_coord = 10
-
 # MENU Config
 MENU_MAX = 80
 # SPEED
 MAX_SPEED = 16
+
+# Define some colors.
+BLACK = pygame.Color('black')
+WHITE = pygame.Color('white')
 
 STANCES = {
     'DOWN': cyberdog_app_pb2.CheckoutMode_request.DEFAULT,
@@ -50,6 +50,37 @@ MODES = {
     'MAX': cyberdog_app_pb2.MonOrder.MONO_ORDER_MAX,
 }
 
+CAMERA = {
+    'START': cyberdog_app_pb2.CameraService_request.START_LIVE_STREAM,
+    'STOP': cyberdog_app_pb2.CameraService_request.STOP_LIVE_STREAM,
+    'STATE': cyberdog_app_pb2.CameraService_request.GET_STATE,
+}
+
+
+# This is a simple class that will help us print to the screen.
+# It has nothing to do with the joysticks, just outputting the
+# information.
+class TextPrint(object):
+    def __init__(self):
+        self.reset()
+        self.font = pygame.font.Font(None, 20)
+
+    def tprint(self, screen, textString):
+        textBitmap = self.font.render(textString, True, BLACK)
+        screen.blit(textBitmap, (self.x, self.y))
+        self.y += self.line_height
+
+    def reset(self):
+        self.x = 10
+        self.y = 10
+        self.line_height = 15
+
+    def indent(self):
+        self.x += 10
+
+    def unindent(self):
+        self.x -= 10
+
 
 class Vector3:
     x: float = 0
@@ -64,7 +95,7 @@ class Vector3:
 
 
 # stub = None
-cyberdog_ip = '192.168.243.21'  # Write Your Cyberdog IP Here or Input while running
+cyberdog_ip = '192.168.104.21'  # Write Your Cyberdog IP Here or Input while running
 speed_lv = 1
 linear = Vector3(0, 0, 0)
 angular = Vector3(0, 0, 0)
@@ -81,6 +112,17 @@ class CyberDog:
 
 pygame.init()
 
+# Set the width and height of the screen (width, height).
+screen = pygame.display.set_mode((500, 700))
+
+pygame.display.set_caption("CyberDog Tests")
+
+# Used to manage how fast the screen updates.
+clock = pygame.time.Clock()
+
+# Get ready to print.
+textPrint = TextPrint()
+
 # Hacemos un recuento del número de joysticks conectados al ordenador
 joystick_count = pygame.joystick.get_count()
 if joystick_count == 0:
@@ -94,31 +136,6 @@ else:
     # Get the name from the OS for the controller/joystick.
     name = mi_joystick.get_name()
     print("Joystick name: {}".format(name))
-
-    # Usually axis run in pairs, up/down for one, and left/right for
-    # the other.
-    # axes = mi_joystick.get_numaxes()
-    # print("Number of axes: {}".format(axes))
-
-    # for i in range(axes):
-    #     axis = mi_joystick.get_axis(i)
-    #     print("Axis {} value: {:>6.3f}".format(i, axis))
-
-    # buttons = mi_joystick.get_numbuttons()
-    # print("Number of buttons: {}".format(buttons))
-
-    # for i in range(buttons):
-    #     button = mi_joystick.get_button(i)
-    #     print("Button {:>2} value: {}".format(i, button))
-
-    # hats = mi_joystick.get_numhats()
-    # print("Number of hats: {}".format(hats))
-
-    # # Hat position. All or nothing for direction, not a float like
-    # # get_axis(). Position is a tuple of int values (x, y).
-    # for i in range(hats):
-    #     hat = mi_joystick.get_hat(i)
-    #     print("Hat {} value: {}".format(i, str(hat)))
 
 
 def PrintState():
@@ -140,6 +157,38 @@ def PrintState():
     print('Up Arrow : Stand Up')
     print('Down Arrow : Get Down')
     print('ESC :Exit Control')
+
+
+# def PrintStateWindows(screen):
+#     while True:
+#         screen.fill(WHITE)
+#         textPrint.reset()
+#         textPrint.tprint(screen, 'Now speed:%.1fm/s' % float(speed_lv*0.1))
+#         textPrint.tprint(screen, '--------- KEYBOARD CONTROL ----------')
+#         textPrint.tprint(screen, 'W : GoFront')
+#         textPrint.tprint(screen, 'S : GoBack')
+#         textPrint.tprint(screen, 'A : GoLeft')
+#         textPrint.tprint(screen, 'D : GoRight')
+#         textPrint.tprint(screen, 'Q : TurnLeft')
+#         textPrint.tprint(screen, 'E : TurnRight')
+#         textPrint.tprint(screen, 'U : SpeedUp')
+#         textPrint.tprint(screen, 'I : SpeedDown')
+#         textPrint.tprint(screen, '--------- GAMEPAD CONTROL ----------')
+#         textPrint.tprint(screen, 'Left Stick : Move')
+#         textPrint.tprint(screen, 'Right Stick : Straff')
+#         textPrint.tprint(screen, 'A : SpeedUp')
+#         textPrint.tprint(screen, 'B : SpeedDown')
+#         textPrint.tprint(screen, 'Up Arrow : Stand Up')
+#         textPrint.tprint(screen, 'Down Arrow : Get Down')
+#         textPrint.tprint(screen, 'ESC :Exit Control')
+#         textPrint.indent()
+#         #
+#         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
+#         #
+#         # Go ahead and update the screen with what we've drawn.
+#         pygame.display.flip()
+#         # Limit to 20 frames per second.
+#         clock.tick(20)
 
 
 def SendData(channel):
@@ -301,22 +350,33 @@ def SetMode(channel, mode):
         print('Execute Welcome order, result:' + str(succeed_state))
 
 
-def GetStatus(channel):
+def GetCamera(channel, mode):
     # Get stub from channel
     stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
-    response = stub.subscribeStatus(cyberdog_app_pb2.StatusStamped())
+    response = stub.requestCamera(
+        cyberdog_app_pb2.CameraService_request(command=mode,
+                                               timeout=50))
     for resp in response:
         succeed_state = resp.succeed
-        print('Get Status, result:' + str(succeed_state))
+        print('Get Camera Status, result:' + str(succeed_state))
 
 
-def GetTrackingStatus(channel):
-    # Get stub from channel
-    stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
-    response = stub.subscribeTrackingStatus(cyberdog_app_pb2.TrackingStatus())
-    for resp in response:
-        succeed_state = resp.succeed
-        print('Get Tracking Status, result:' + str(succeed_state))
+# def GetStatus(channel):
+#     # Get stub from channel
+#     stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
+#     response = stub.subscribeStatus(cyberdog_app_pb2.StatusStamped())
+#     for resp in response:
+#         succeed_state = resp.succeed
+#         print('Get Status, result:' + str(succeed_state))
+
+
+# def GetTrackingStatus(channel):
+#     # Get stub from channel
+#     stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
+#     response = stub.subscribeTrackingStatus(cyberdog_app_pb2.TrackingStatus())
+#     for resp in response:
+#         succeed_state = resp.succeed
+#         print('Get Tracking Status, result:' + str(succeed_state))
 
 
 def CyberdogControl():
@@ -406,8 +466,9 @@ def CyberdogControl():
                     if event.button == 1:
                         print("¡¡¡ SPEED DOWN !!!")
                         SpeedDown(None)
-                    # if event.button == 2:
-                    #     print("to assign")
+                    if event.button == 2:
+                        print("CAMERA TEST")
+                        GetCamera(channel, CAMERA['START'])
                     # if event.button == 3:
                     #     print("to assign")
                     # if event.button == 4:

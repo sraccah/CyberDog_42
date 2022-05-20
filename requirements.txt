@@ -5,3 +5,7 @@ pygame
 colored
 moviepy
 opencv-python
+pyaudio
+SpeechRecognition
+google-cloud-speech
+textract
