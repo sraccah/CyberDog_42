@@ -1,32 +1,32 @@
-# CyberDog Protocol using GRPC and Python
+# Protocolo CyberDog con GRPC y Python
 
-## **Installation**
+## **Instalación**
 
-First of all, you need to install the `grpc` module:
+En primer lugar, es necesario instalar el módulo `grpc`:
 
 ```bash
 sudo pip3 install grpcio
 sudo pip3 install grpcio-tools
 ```
 
-From the [Xiaomi CyberDog Protocol Repository](https://partner-gitlab.mioffice.cn/cyberdog/athena_cyberdog/-/tree/devel/athena_common/athena_grpc/protos), download the proto file `cyberdog_app.proto` and use the following command to generate the python module:
+Desde el [Repositorio del protocolo Xiaomi CyberDog](https://partner-gitlab.mioffice.cn/cyberdog/athena_cyberdog/-/tree/devel/athena_common/athena_grpc/protos), descarga el archivo proto `cyberdog_app.proto` y utiliza el siguiente comando para generar el módulo python:
 
 ```bash
 python3 -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. *.proto
 ```
 
-Be sure that the files generated are named `cyberdog_app_pb2.py` and `cyberdog_app_pb2_grpc.py` and that the modules are in the same directory.
+Asegúrese de que los archivos generados se llaman `cyberdog_app_pb2.py` y `cyberdog_app_pb2_grpc.py` y que los módulos están en el mismo directorio.
 
-## **Optional**
+## **Opcional**
 
-You also can install the keyboard python module to easily control the keyboard:
+También puedes instalar el módulo python keyboard para controlar fácilmente el teclado:
 
 ```bash
 sudo pip3 install keyboard
 sudo pip3 install pygame
 ```
 
-A requirements file is available, to just do:
+Hay un archivo de requisitos disponible, para simplemente hacerlo:
 
 ```bash
 pip3 install -r requirements.txt
@@ -34,7 +34,7 @@ pip3 install -r requirements.txt
 
 ## **Scripting time**
 
-Next, you can begin to script to connect to the CyberDog and check if the GRPC connection is open and is working:
+A continuación, puede comenzar el script para conectarse al CyberDog y comprobar si la conexión GRPC está abierta y funciona:
 
 ```python
 from os import system
@@ -46,17 +46,17 @@ import cyberdog_app_pb2_grpc
 
 # Open GRPC channel
 with grpc.insecure_channel(str(CYBERDOG_IP) + ':50051') as channel:
-    print("Wait connect")
+    print("Esperar a que se conecte")
     try:
         grpc.channel_ready_future(channel).result(timeout=10)
     except grpc.FutureTimeoutError:
-        print("Connexion error, Timeout")
+        print("Error de conexión, tiempo de espera")
         return
     # Get stub from channel
     stub = cyberdog_app_pb2_grpc.CyberdogAppStub(channel)
 ```
 
-Next, you can use the `setMode()` function from the `stub` to send a commands to the CyberDog:
+A continuación, puede utilizar la función `setMode()` del `stub` para enviar un comando al CyberDog:
 
 ```python
 # MANUAL MODE => Stand up
@@ -78,10 +78,10 @@ response = stub.setMode(
 succeed_state = False
 for resp in response:
     succeed_state = resp.succeed
-    print('Execute Stand up mode called MANUAL, result:' + str(succeed_state))
+    print('Ejecutar el modo Stand up llamado MANUAL, resultado:' + str(succeed_state))
 ```
 
-Same thing to return to the basic state:
+Lo mismo para volver al estado básico:
 
 ```python
 # DEFAULT MODE => Get down
@@ -104,12 +104,12 @@ response = stub.setMode(
         timeout=10))
 for resp in response:
     succeed_state = resp.succeed
-    print('Execute DEFAULT mode, result:' + str(succeed_state))
+    print('Ejecutar el modo DEFAULT, resultado:' + str(succeed_state))
 ```
 
-From now you can add all kind of functions and interactions with the CyberDog, thanks to the libraries available.
+A partir de ahora puede añadir todo tipo de funciones e interacciones con el CyberDog, gracias a las librerías disponibles.
 
-For exemple the keyboard module can be used to control the robot:
+Por ejemplo, el módulo de teclado se puede utilizar para controlar el robot:
 
 ```python
 # FORWARD and BACKWARD
@@ -133,9 +133,9 @@ keyboard.on_press_key('i', SpeedDown)
 keyboard.on_release(Stop)
 ```
 
-But first you need to understand a little bit how the CyberDog works to be able to move it or interract with his sensors.
+Pero primero hay que entender un poco cómo funciona el CyberDog para poder moverlo o interactuar con sus sensores.
 
-We are using the `Vector3` structure to represent the movement.
+Estamos utilizando la estructura `Vector3` para representar el movimiento.
 
 ```python
 # Vector3 structure
@@ -151,7 +151,7 @@ class Vector3:
         pass
 ```
 
-And this allow us to prepare some parameters to send to the CyberDog:
+Y esto nos permite preparar algunos parámetros para enviar al CyberDog:
 
 ```python
 speed_lv = 1 # From 0.1 to 1.6
@@ -159,7 +159,7 @@ linear = Vector3(0, 0, 0)
 angular = Vector3(0, 0, 0)
 ```
 
-To send the datas to the CyberDog you will use the stub to access the `sendAppDecision()` function:
+Para enviar los datos al CyberDog se utilizará el stub para acceder a la función `sendAppDecision()`:
 
 ```python
 stub.sendAppDecision(
@@ -180,7 +180,7 @@ stub.sendAppDecision(
     )
 ```
 
-Let's say you create a function to send the datas named `SendData`, you just have to create other functions to update the parameters you want to send to the CyberDog:
+Digamos que usted crea una función para enviar los datos llamada `SendData`, sólo tiene que crear otras funciones para actualizar los parámetros que desea enviar al CyberDog:
 
 ```python
 def GoForward(Event):
@@ -190,7 +190,7 @@ def GoForward(Event):
     SendData()
 ```
 
-Always be sure to have a `stop` function to stop the robot:
+Asegúrese siempre de tener una función `stop` para detener el robot:
 
 ```python
 def Stop(Event):
@@ -200,9 +200,9 @@ def Stop(Event):
     SendData()
 ```
 
-Go back to the keyboard part of this document to see how we can use these functions and the keyboard to control the robot.
+Vuelve a la parte del teclado de este documento para ver cómo podemos utilizar estas funciones y el teclado para controlar el robot.
 
-We saw the `setMode()` function but there is a lot of posibilities, for exemple the `setExtmonOrder()` to use a predefined action from the list below:
+Hemos visto la función `setMode()` pero hay muchas posibilidades, por ejemplo la función `setExtmonOrder()` para usar una acción predefinida de la lista de abajo:
 
 ```python
 MONO_ORDER_NULL        =  0;
@@ -222,19 +222,19 @@ MONO_ORDER_BOW         = 19;
 MONO_ORDER_MAX         = 20;
 ```
 
-The modes are defining the standing position of the CyberDog and are:
+Los modos definen la posición de pie del CyberDog y son:
 
 ```python
-DEFAULT = 0; # default mode seen earlier (Get down)
+DEFAULT = 0; # modo por defecto visto anteriormente (Get down)
 LOCK = 1;
 CONFIG = 2;
-MANUAL = 3; # manual mode seen earlier (Stand up)
+MANUAL = 3; # modo manual visto anteriormente (Stand up)
 SEMI = 13;
 EXPLOR = 14;
 TRACK = 15;
 ```
 
-The moving patterns are called `GAIT` and are defining the way the CyberDog will move. (the walking style as we may say)
+Los patrones de movimiento se denominan `GAIT` y definen la forma en que se moverá el CyberDog. (el estilo de andar, como podemos decir)
 
 ```python
 GAIT_TRANS     = 0;
@@ -252,7 +252,7 @@ GAIT_PRONK     = 11;
 GAIT_DEFAULT   = 99;
 ```
 
-So we can use the `setExtmonOrder()` function to set the mode:
+Así que podemos utilizar la función `setExtmonOrder()` para establecer el modo:
 
 ```python
 # Previous code to connect and stand up
@@ -269,10 +269,10 @@ response = stub.setExtmonOrder(
         timeout=50))
 for resp in response:
     succeed_state = resp.succeed
-    print('Execute Dance order, result:' + str(succeed_state))
+    print('Ejecutar orden de baile, resultado:' + str(succeed_state))
 ```
 
-And the `setPattern()` function to set the gait:
+Y la función `setPattern()` para establecer la marcha:
 
 ```python
 # Change gait to trot
@@ -295,25 +295,25 @@ response = stub.setPattern(
 )
 for resp in response:
     succeed_state = resp.succeed
-    print('Change gait to trot, result:' + str(succeed_state))
+    print('Cambiar la marcha al trot, resultado:' + str(succeed_state))
 ```
 
-## **USING A GAMEPAD TO CONTROL THE CYBERDOG**
+## **USANDO UN GAMEPAD PARA CONTROLAR EL CYBERDOG**
 
-To do that we are using the `pygame` librairy. And are initializating the librairy as such:
+Para ello estamos utilizando la librairia `pygame`. Y estamos inicializando la librairy como tal:
 
 ```python
 pygame.init()
 ```
 
-To check if we have some controllers plugged in:
+Para comprobar si tenemos algunos controladores conectados:
 
 ```python
 # Checking for joysticks
 joystick_count = pygame.joystick.get_count()
 if joystick_count == 0:
     # No joysticks!
-    print("Error, I have not found any joystick.")
+    print("Error, No he encontrado ningún joystick.")
     exit()
 else:
     # Initialize joystick #0
@@ -321,20 +321,20 @@ else:
     mi_joystick.init()
     # Get the name from the OS for the controller/joystick.
     name = mi_joystick.get_name()
-    print("Joystick name: {}".format(name))
+    print("Nombre del joystick: {}".format(name))
 ```
 
-No olvidas to quit `pygame` when you are done:
+No hay que olvidarse de salir de `pygame` cuando se termina:
 
 ```python
 pygame.quit()
 ```
 
-You can use the script provided to get the datas from the controller. (controller_styled.py or controller_name.py)
+Puedes utilizar el script proporcionado para obtener los datos del controlador. (controller_styled.py o controller_name.py)
 
-## **USING YOUR VOICE TO CONTROL THE CYBERDOG**
+## **USAR LA VOZ PARA CONTROLAR EL CYBERDOG**
 
-To do that we are using the `SpeechRecognition` librairy. And are initializating the librairy as such:
+Para ello estamos utilizando la librería `SpeechRecognition`. Y estamos inicializando la librería como tal:
 
 ```python
 import speech_recognition as sr
@@ -343,26 +343,26 @@ language_es = "es-ES"
 language_us = "en-US"
 ```
 
-To get the audio from the microphone:
+Para obtener el audio del micrófono:
 
 ```python
 r = sr.Recognizer()
 with sr.Microphone() as source:
-    r.energy_threshold = 3000 # Used for tests (300 by default)
+    r.energy_threshold = 3000 # Se utiliza para las pruebas (300 por defecto)
     r.dynamic_energy_threshold = True
     r.adjust_for_ambient_noise(source, duration=0.515)
-    print("Listening!")
+    print("¡Escuchando!")
     audio = r.listen(source)
 ```
 
-## **NOTICE**
+## **AVISO**
 
-Using the mobile application and a computer, or two computers, **at the same time** to control the robot is not adviced as it's giving contradictory signals to the Cyberdog.
+Utilizar la aplicación móvil y un ordenador, o dos ordenadores, **al mismo tiempo** para controlar el robot no es aconsejable ya que está dando señales contradictorias al Cyberdog.
 
-## **TROUBLESHOOTING**
+## **SOLUCIÓN DE PROBLEMAS**
 
-If the CyberDog is not reacting to nothing, you can try to revive it by plugging it to the charger for a second.
+Si el CyberDog no reacciona a nada, puede intentar revivirlo enchufándolo al cargador durante un segundo.
 
 ## **IDEAS**
 
-WOL on the CyberDog and an Alexa skill to be able to call the robot from anywhere.
+WOL en el CyberDog y una skill de Alexa para poder llamar al robot desde cualquier lugar.
