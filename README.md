@@ -339,8 +339,12 @@ To do that we are using the `SpeechRecognition` librairy. And are initializating
 ```python
 import speech_recognition as sr
 
-language_es = "es-ES"
-language_us = "en-US"
+LANGUAGES = {
+    'FR': "fr-FR",
+    'EN': "en-US",
+    'ES': "es-ES",
+    'UK': "uk-UA",
+}
 ```
 
 To get the audio from the microphone:
